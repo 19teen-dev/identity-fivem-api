@@ -1,0 +1,52 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model accounts {
+    id       BigInt     @id @default(autoincrement())
+    login    String     @unique
+    email    String     @unique
+    password String
+    accstatus   Int     @default(0)
+    adminlevel  Int     @default(0)
+    statusReason String? @map("status_reason")
+    createdAt DateTime  @default(now()) @map("created_at")
+    lastLogin DateTime? @map("last_login")
+    characters characters[]
+
+    @@map("accounts")
+}
+
+model characters {
+    id        BigInt @id @default(autoincrement())
+    accountId BigInt @map("account_id")
+    firstname   String
+    lastname    String
+    dateofbirth String
+    nationality String
+    sex         String  @default("male")
+    height Int @default(180)
+    weight Int @default(80)
+    charstatus   Int     @default(0)
+    statusReason String? @map("status_reason")
+    cash Int @default(500)
+    bank Int @default(5000)
+    hunger   Int @default(100)
+    thirst   Int @default(100)
+    job      String @default("unemployed")
+    jobGrade Int    @default(0) @map("job_grade")
+    position   Json @default("{ \"x\": -1037.0, \"y\": -2738.0, \"z\": 20.0, \"heading\": 0.0 }")
+    appearance Json @default("{}")
+    hudLayout  Json @default("{}") @map("hud_layout")
+    deleted    Boolean   @default(false)
+    createdAt  DateTime  @default(now()) @map("created_at")
+    lastPlayed DateTime? @map("last_played")
+    account accounts @relation(fields: [accountId], references: [id], onDelete: Cascade)
+    @@index([accountId])
+    @@map("characters")
+}
